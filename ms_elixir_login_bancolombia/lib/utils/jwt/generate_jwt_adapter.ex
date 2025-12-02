@@ -14,7 +14,7 @@ defmodule MsElixirLoginBancolombia.Jwt.GenerateJWTAdapter do
 
   @spec generate_token(String.t()) :: {:ok, String.t()} | {:error, any()}
   def generate_token(user_email) do
-    case Token.generate_and_sign!(%{"email" => user_email}, @key) do
+    case Token.generate_and_sign!(%{"email" => user_email, "fecha" => get_request_date()}, @key) do
       token -> {:ok, token}
       {:error, reason} -> {:error, reason}
     end
@@ -24,15 +24,22 @@ defmodule MsElixirLoginBancolombia.Jwt.GenerateJWTAdapter do
   def validate_token(nil), do: {:error, :jwt_expired}
 
   def validate_token(token) do
-    IO.inspect(token, label: "Cristian")
-    IO.inspect(@key, label: "Cristian")
-    IO.inspect("Malo" || Token.verify_and_validate(token, @key), label: "Cristian 1")
     case Token.verify_and_validate(token, @key) do
-      {:ok, _} ->
-        {:ok, :empty}
+      {:ok, claims} ->
+        if(Map.get(claims, "fecha") < get_request_date()) do
+          {:error, :jwt_expired}
+        else
+          {:ok, :empty}
+        end
 
       {:error, _reason} ->
         {:error, :jwt_expired}
     end
+  end
+
+  defp get_request_date() do
+    now = DateTime.utc_now() |> Timex.to_datetime("America/Bogota")
+
+    "#{now.day}/#{now.month}/#{now.year} #{now.hour}:#{now.minute}:#{now.second}:#{elem(now.microsecond, 0)}"
   end
 end
