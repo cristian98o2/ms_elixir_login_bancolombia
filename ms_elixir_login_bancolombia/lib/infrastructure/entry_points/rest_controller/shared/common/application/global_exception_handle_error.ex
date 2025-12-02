@@ -24,7 +24,7 @@ defmodule MsElixirLoginBancolombia.Infrastructure.EntryPoint.GlobalExceptionHand
       "error" => %{
         "code" => exception_result.code,
         "message" => exception_result.detail,
-        "details" => [],
+        "details" => %{},
         "correlation" => %{
           "message_id" => message_id,
           "x_request_id" => x_request_id
