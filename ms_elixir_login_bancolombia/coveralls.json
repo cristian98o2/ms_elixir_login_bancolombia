@@ -1,0 +1,7 @@
+{
+  "coverage_options": {
+    "xml_base_dir": "ms_elixir_login_bancolombia/",
+    "output_dir": "_build/release",
+    "minimum_coverage": 0
+  }
+}
